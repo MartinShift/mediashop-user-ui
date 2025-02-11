@@ -15,9 +15,6 @@ export default defineConfig({
       },
     },
   },
-  optimizeDeps: {
-    include: ['jquery', 'bootstrap'],
-  },
   server: {
     historyApiFallback: true,
   },
