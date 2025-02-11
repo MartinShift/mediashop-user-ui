@@ -20,7 +20,6 @@ const MainPage = () => {
             token = getToken();
         }
         else if(token) {
-        console.log('set token:', token);
             setToken(token);  
             navigate('/index');
         }

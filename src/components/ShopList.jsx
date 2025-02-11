@@ -11,7 +11,6 @@ import ShopProductContainer from './shared/ShopProductContainer';
 const ShopList = () => {
     const params = new URLSearchParams(window.location.search);
     const categoryId = params.get('category');
-    console.log('Category ID:', categoryId);
     const [filters, setFilters] = useState({
         search: '',
         categoryIds: categoryId ? [parseInt(categoryId)] : [],

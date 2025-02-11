@@ -89,10 +89,10 @@ const ClientNavBar = () => {
                         </div>
                         {!isLoading && (
                         <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="/cart" className="btn px-0 ml-3">
+                            <Link to="/cart" className="btn px-0 ml-3">
                                 <i className="fas fa-shopping-cart text-primary"></i>
                                 <span className="badge text-secondary border border-secondary rounded-circle">{user?.orderCount}</span>
-                            </a>
+                            </Link>
                         </div>
                         )}
                     </nav>
