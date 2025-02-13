@@ -56,20 +56,21 @@ const MainPage = () => {
             <ClientTopBar />
             <ClientNavBar />
 
-            <div className="container-fluid pt-5 pb-3">
-                <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
-                    <span className="bg-secondary pr-3">Найпопулярніші товари</span>
-                </h2>
-                <div className="row px-xl-5">
-                    {isLoading ? (
-                        <div>Завантаження...</div>
-                    ) : (
-                        featuredProducts.map(product => (
-                            <ProductContainer key={product.id} product={product} />
-                        ))
-                    )}
+            <div className="container-fluid py-5 bg-secondary">
+            <div className="container">
+                <div className="text-center">
+                    <h1 className="text-uppercase mb-4">Ласкаво просимо до Media Shop</h1>
+                    <div className="row justify-content-center">
+                        <div className="col-lg-8">
+                            <p className="lead text-dark mb-4">
+                                Media Shop - ваш надійний партнер у світі цифрових розваг. 
+                                Ми пропонуємо широкий вибір товарів за найкращими цінами. 
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
             <div className="container-fluid pt-5 pb-3">
                 <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">

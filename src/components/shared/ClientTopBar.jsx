@@ -33,17 +33,12 @@ const ClientTopBar = () => {
   return (
     <div className="container-fluid">
       <div className="row align-items-center bg-light py-3 px-xl-5 d-lg-flex">
-        <div className="col-lg-4 col-12 text-left">
-          {/* <div>
-          <Link to="/" className="text-decoration-none">
-            <span className="h1 text-uppercase text-dark bg-primary px-2">Media</span>
-            <span className="h1 text-uppercase text-primary bg-dark px-2 ml-n1">Shop</span>
-          </Link>
-          </div> */}
+        <div className="col-lg-4 col-6">
+          <img src='../../public/image.png' className="img-fluid col-lg-4" style={{ maxWidth: '125px', maxHeight: '125px' }} />
         </div>
 
-        <div className="col-lg-4 col-6 text-left">
-
+        <div className="col-lg-4 d-none d-lg-block">
+          {/* Empty div for large screens */}
         </div>
 
         <div className="col-lg-4 col-6 text-right">
