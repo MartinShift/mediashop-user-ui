@@ -53,6 +53,7 @@ const ProductPage = () => {
                 setReviews(productDetail.reviews);
             } catch (error) {
                 console.error('Error fetching data:', error);
+                navigate('/signin');
             } finally {
                 setLoading(false);
             }
@@ -94,7 +95,7 @@ const ProductPage = () => {
             <div className="container-fluid">
                 <div className="row px-xl-5">
                     <div className="col-lg-5 mb-30">
-                        <img className="w-100 h-100" src={product.mediaUrl || 'img/product-1.jpg'} alt={product.name} />
+                        <img className="w-100 h-100" src={product.previewUrl || 'img/product-1.jpg'} alt={product.name} />
                     </div>
                     <div className="col-lg-7 h-auto mb-30">
                         <div className="h-100 bg-light p-30">
