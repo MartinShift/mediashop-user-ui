@@ -12,14 +12,14 @@ const OrderModal = ({ show, onClose, onConfirm, product }) => {
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Confirm Order</h5>
+                            <h5 className="modal-title">Підтвердження замовлення</h5>
                             <button type="button" className="close" onClick={onClose}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div className="modal-body">
-                            <p>Are you sure you want to order "{product?.name}"?</p>
-                            <p>Price: ${product?.price?.toFixed(2)}</p>
+                            <p>Ви впевнені, що хочете замовити "{product?.name}"?</p>
+                            <p>Ціна: ${product?.price?.toFixed(2)}</p>
                         </div>
                         <div className="modal-footer">
                             <button 
@@ -27,14 +27,14 @@ const OrderModal = ({ show, onClose, onConfirm, product }) => {
                                 className="btn btn-secondary" 
                                 onClick={onClose}
                             >
-                                Cancel
+                                Скасувати
                             </button>
                             <button 
                                 type="button" 
                                 className="btn btn-primary" 
                                 onClick={onConfirm}
                             >
-                                Confirm Order
+                                Підтвердити замовлення
                             </button>
                         </div>
                     </div>

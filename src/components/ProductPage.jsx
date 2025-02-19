@@ -8,7 +8,7 @@ import ClientNavBar from './shared/ClientNavBar';
 import OrderModal from './shared/OrderModal';
 import Footer from './shared/Footer';
 import StarRating from './shared/StarRating';
-import { createOrder } from '../services/orderService';
+import { createOrder, OrderStatus } from '../services/orderService';
 
 const ProductPage = () => {
     const { id } = useParams();
@@ -20,14 +20,8 @@ const ProductPage = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [activeTab, setActiveTab] = useState('description');
     const [showModal, setShowModal] = useState(false);
+    const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
-
-    const hasCompletedOrder = () => {
-        return product?.orders?.some(order =>
-            order.userId === currentUser?.id &&
-            order.status === OrderStatus.Completed
-        );
-    };
 
     const handlePlaceOrder = async () => {
         try {
@@ -43,13 +37,24 @@ const ProductPage = () => {
         }
     };
 
+    const hasExistingOrder = () => {
+        console.log(currentUser.id)
+        return orders.some(order =>
+            order.userId === currentUser?.id &&
+            (order.status == OrderStatus.Completed || order.status == OrderStatus.InProgress)
+        );
+    };
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const user = await getCurrentUser();
                 setCurrentUser(user);
                 const productDetail = await getProductDetail(id);
+                console.log(productDetail)
                 setProduct(productDetail.product);
+                setOrders(productDetail.orders);
                 setReviews(productDetail.reviews);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -107,10 +112,10 @@ const ProductPage = () => {
                             <h3 className="font-weight-semi-bold mb-4">${product.price.toFixed(2)}</h3>
                             <p className="mb-4">{product.description}</p>
                             <div className="d-flex align-items-center mb-4 pt-2">
-                                {currentUser && hasCompletedOrder() ? (
+                                {currentUser && hasExistingOrder() ? (
                                     <button className="btn btn-success px-3" disabled>
                                         <i className="fa fa-check mr-1"></i>
-                                        У вас вже є цей продукт
+                                        Ви вже маєте замовлення на цей товар
                                     </button>
                                 ) : (
                                     <button
@@ -155,22 +160,22 @@ const ProductPage = () => {
                                             <div className="col-md-6">
                                                 <h4 className="mb-4">{reviews.length} відгуків</h4>
                                                 {reviews.map(review => (
-                                                <div key={review.id} className="media mb-4">
-                                                    <img src={review.user.avatarUrl || "img/user.jpg"}
-                                                        alt={review.user.visibleName}
-                                                        className="img-fluid mr-3 mt-1 rounded-circle"
-                                                        style={{ width: '45px', height: '45px' }} />
-                                                    <div className="media-body">
-                                                        <h6>{review.user.visibleName}
-                                                            <small> - <i>{new Date(review.createdAt).toLocaleDateString()}</i></small>
-                                                        </h6>
-                                                        <div className="text-primary mb-2">
-                                                            <StarRating rating={review.rating} />
+                                                    <div key={review.id} className="media mb-4">
+                                                        <img src={review.user.avatarUrl || "img/user.jpg"}
+                                                            alt={review.user.visibleName}
+                                                            className="img-fluid mr-3 mt-1 rounded-circle"
+                                                            style={{ width: '45px', height: '45px' }} />
+                                                        <div className="media-body">
+                                                            <h6>{review.user.visibleName}
+                                                                <small> - <i>{new Date(review.createdAt).toLocaleDateString()}</i></small>
+                                                            </h6>
+                                                            <div className="text-primary mb-2">
+                                                                <StarRating rating={review.rating} />
+                                                            </div>
+                                                            <p>{review.text}</p>
                                                         </div>
-                                                        <p>{review.text}</p>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
                                             </div>
 
                                             {currentUser && !hasUserReviewed && (
@@ -180,14 +185,14 @@ const ProductPage = () => {
                                                         <div className="d-flex my-3">
                                                             <p className="mb-0 mr-2">Ваша оцінка * :</p>
                                                             <div className="text-primary">
-                                                            {[...Array(5)].map((_, index) => (
-                                                                <i key={index}
-                                                                    className={`${index < rating ? 'fas' : 'far'} fa-star`}
-                                                                    onClick={() => setRating(index + 1)}
-                                                                    style={{ cursor: 'pointer' }}>
-                                                                </i>
-                                                            ))}
-                                                        </div>
+                                                                {[...Array(5)].map((_, index) => (
+                                                                    <i key={index}
+                                                                        className={`${index < rating ? 'fas' : 'far'} fa-star`}
+                                                                        onClick={() => setRating(index + 1)}
+                                                                        style={{ cursor: 'pointer' }}>
+                                                                    </i>
+                                                                ))}
+                                                            </div>
                                                         </div>
                                                         <div className="form-group">
                                                             <label htmlFor="message">Ваш відгук *</label>
@@ -201,10 +206,10 @@ const ProductPage = () => {
                                                             ></textarea>
                                                         </div>
                                                         <div className="form-group mb-0">
-                                                            <input type="submit" 
-                                                                   value="Опублікувати відгук"
-                                                                   className="btn btn-primary px-3"
-                                                                   disabled={!rating || !reviewText} />
+                                                            <input type="submit"
+                                                                value="Опублікувати відгук"
+                                                                className="btn btn-primary px-3"
+                                                                disabled={!rating || !reviewText} />
                                                         </div>
                                                     </form>
                                                 </div>
@@ -224,7 +229,7 @@ const ProductPage = () => {
                     handlePlaceOrder();
                     setShowModal(false);
                 }}
-                product={product} 
+                product={product}
             />
             <Footer />
         </>
