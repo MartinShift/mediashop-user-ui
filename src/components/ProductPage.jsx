@@ -23,6 +23,10 @@ const ProductPage = () => {
     const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
 
+    const handleUnauthorizedAction = () => {
+        navigate('/signin');
+    };
+
     const handlePlaceOrder = async () => {
         try {
             const orderDto = {
@@ -49,16 +53,17 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const user = await getCurrentUser();
-                setCurrentUser(user);
                 const productDetail = await getProductDetail(id);
                 console.log(productDetail)
                 setProduct(productDetail.product);
                 setOrders(productDetail.orders);
                 setReviews(productDetail.reviews);
+                const user = await getCurrentUser();
+                if (user) {
+                    setCurrentUser(user);
+                }
             } catch (error) {
                 console.error('Error fetching data:', error);
-                navigate('/signin');
             } finally {
                 setLoading(false);
             }
@@ -112,15 +117,24 @@ const ProductPage = () => {
                             <h3 className="font-weight-semi-bold mb-4">${product.price.toFixed(2)}</h3>
                             <p className="mb-4">{product.description}</p>
                             <div className="d-flex align-items-center mb-4 pt-2">
-                                {currentUser && hasExistingOrder() ? (
-                                    <button className="btn btn-success px-3" disabled>
-                                        <i className="fa fa-check mr-1"></i>
-                                        Ви вже маєте замовлення на цей товар
-                                    </button>
+                                {currentUser ? (
+                                    hasExistingOrder() ? (
+                                        <button className="btn btn-success px-3" disabled>
+                                            <i className="fa fa-check mr-1"></i>
+                                            Ви вже маєте замовлення на цей товар
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="btn btn-primary px-3"
+                                            onClick={() => setShowModal(true)}>
+                                            <i className="fa fa-shopping-cart mr-1"></i>
+                                            Замовити
+                                        </button>
+                                    )
                                 ) : (
                                     <button
                                         className="btn btn-primary px-3"
-                                        onClick={() => setShowModal(true)}>
+                                        onClick={handleUnauthorizedAction}>
                                         <i className="fa fa-shopping-cart mr-1"></i>
                                         Замовити
                                     </button>
@@ -178,10 +192,17 @@ const ProductPage = () => {
                                                 ))}
                                             </div>
 
-                                            {currentUser && !hasUserReviewed && (
+                                            {(!currentUser || (currentUser && !hasUserReviewed)) && (
                                                 <div className="col-md-6">
                                                     <h4 className="mb-4">Залишити відгук</h4>
-                                                    <form onSubmit={handleSubmitReview}>
+                                                    <form onSubmit={(e) => {
+                                                        e.preventDefault();
+                                                        if (!currentUser) {
+                                                            handleUnauthorizedAction();
+                                                            return;
+                                                        }
+                                                        handleSubmitReview(e);
+                                                    }}>
                                                         <div className="d-flex my-3">
                                                             <p className="mb-0 mr-2">Ваша оцінка * :</p>
                                                             <div className="text-primary">
