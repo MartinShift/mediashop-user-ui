@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getMediaTypeName, getProductDetail } from '../services/productService';
 import { createReview } from '../services/reviewService';
 import { getCurrentUser, getToken } from '../services/userService';
@@ -113,6 +113,11 @@ const ProductPage = () => {
                             <div className="d-flex mb-3">
                                 <StarRating rating={product.averageRating} />
                                 <small className="pt-1 ml-2">({reviews.length} відгуків)</small>
+                            </div>
+                            <div className="mb-3">
+                                <Link to={`/profile/view/${product.userId}`} className="text-dark">
+                                    Переглянути профіль продавця
+                                </Link>
                             </div>
                             <h3 className="font-weight-semi-bold mb-4">${product.price.toFixed(2)}</h3>
                             <p className="mb-4">{product.description}</p>

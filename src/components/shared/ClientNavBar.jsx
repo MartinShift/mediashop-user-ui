@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getTopCategories } from '../../services/categoryService';
-import { getCurrentUser, getToken, handleAdminRedirect } from '../../services/userService';
+import { getCurrentUser, getToken, handleAdminRedirect, setToken } from '../../services/userService';
 
 const ClientNavBar = () => {
     const [categories, setCategories] = useState([]);
@@ -12,22 +12,14 @@ const ClientNavBar = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
-      useEffect(() => {
-        const checkAuth = async () => {
-          const token = getToken();
-          if (token) {
-            try {
-              const userData = await getCurrentUser();
-              setUser(userData);
-            } catch (error) {
-              console.error('Failed to fetch user:', error);
-            }
-          }
-          setIsLoading(false);
-        };
-    
-        checkAuth();
-      }, []);
+        useEffect(() => {
+          const checkAuth = async () => {
+
+            setIsLoading(false);
+          };
+      
+          checkAuth();
+        }, []);
 
       const handleCategoryClick = (categoryId) => {
         console.log('Category clicked:', categoryId);

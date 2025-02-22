@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BASE_ADMIN_URL, getCurrentUser, getToken, handleAdminRedirect } from '../../services/userService';
+import { BASE_ADMIN_URL, getCurrentUser, getToken, handleAdminRedirect, setToken } from '../../services/userService';
 
 const ClientTopBar = () => {
   const [user, setUser] = useState(null);
@@ -9,15 +9,30 @@ const ClientTopBar = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = getToken();
+      const urlParams = new URLSearchParams(window.location.search);
+      let token = urlParams.get('token');
+
       if (token) {
+        localStorage.setItem('token', token);
+
         try {
-          const userData = await getCurrentUser();
-          setUser(userData);
+          setToken(token);
         } catch (error) {
-          console.error('Failed to fetch user:', error);
+          console.error('Error parsing user data:', error);
         }
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
+      else {
+        token = getToken();
+      }
+        if (token) {
+          try {
+            const userData = await getCurrentUser();
+            setUser(userData);
+          } catch (error) {
+            console.error('Failed to fetch user:', error);
+          }
+        }
       setIsLoading(false);
     };
 
@@ -44,7 +59,7 @@ const ClientTopBar = () => {
         <div className="col-lg-4 col-6 text-right">
           {!isLoading && (
             <div className="position-relative">
-              <div 
+              <div
                 className="nav-link dropdown-toggle d-flex align-items-center justify-content-end"
                 onClick={() => setShowDropdown(!showDropdown)}
                 style={{ cursor: 'pointer' }}
@@ -74,7 +89,7 @@ const ClientTopBar = () => {
               </div>
 
               <div className={`dropdown-menu dropdown-menu-right ${showDropdown ? 'show' : ''}`}
-                   style={{ position: 'absolute', right: 0, zIndex: 1000 }}>
+                style={{ position: 'absolute', right: 0, zIndex: 1000 }}>
                 {user ? (
                   <>
                     <Link to={`/profile/view/${user.id}`} className="dropdown-item">Переглянути профіль</Link>

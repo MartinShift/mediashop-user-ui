@@ -4,10 +4,10 @@ import { headers } from './userService';
 const BASE_URL = `${BASE_ROOT}/products`;
 
 export const MediaFileType = {
-  Image: 1,
-  Video: 2,
-  Audio: 3,
-  Document: 4
+  Картинка: 1,
+  Відео: 2,
+  Аудіо: 3,
+  Документ: 4
 };
 
 export const getMediaTypeName = (type) => {

@@ -9,6 +9,7 @@ let currentUser = null;
 export const handleAdminRedirect = (e) => {
   e.preventDefault();
   const token = localStorage.getItem('token');
+  
   if (token) {
     const encodedToken = encodeURIComponent(token);
     window.location.href = `${BASE_ADMIN_URL}?token=${encodedToken}`;
@@ -102,6 +103,18 @@ export const getUserById = async (id) => {
   };
 
   export const getCurrentUser = async () => {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let paramsToken = urlParams.get('token');
+    if (paramsToken) {
+      try {
+        setToken(paramsToken);
+        currentUser = null;
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+    
     if(currentUser != null)
     {
       return currentUser;
