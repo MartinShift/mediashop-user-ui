@@ -12,14 +12,37 @@ const ClientNavBar = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
-        useEffect(() => {
-          const checkAuth = async () => {
-
-            setIsLoading(false);
-          };
-      
-          checkAuth();
-        }, []);
+          useEffect(() => {
+            const checkAuth = async () => {
+              const urlParams = new URLSearchParams(window.location.search);
+              let token = urlParams.get('token');
+              console.log("token: " + token);
+        
+              if (token) {
+                localStorage.setItem('token', token);
+        
+                try {
+                  setToken(token);
+                } catch (error) {
+                  console.error('Error parsing user data:', error);
+                }
+              }
+              else {
+                token = getToken();
+              }
+                if (token) {
+                  try {
+                    const userData = await getCurrentUser();
+                    setUser(userData);
+                  } catch (error) {
+                    console.error('Failed to fetch user:', error);
+                  }
+                }
+              setIsLoading(false);
+            };
+        
+            checkAuth();
+          }, []);
 
       const handleCategoryClick = (categoryId) => {
         console.log('Category clicked:', categoryId);

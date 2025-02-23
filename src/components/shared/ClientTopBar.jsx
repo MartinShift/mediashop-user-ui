@@ -12,6 +12,8 @@ const ClientTopBar = () => {
       const urlParams = new URLSearchParams(window.location.search);
       let token = urlParams.get('token');
 
+      console.log("token: " + token);
+
       if (token) {
         localStorage.setItem('token', token);
 
@@ -20,7 +22,6 @@ const ClientTopBar = () => {
         } catch (error) {
           console.error('Error parsing user data:', error);
         }
-        window.history.replaceState({}, document.title, window.location.pathname);
       }
       else {
         token = getToken();

@@ -1,6 +1,8 @@
 export const BASE_ROOT = 'https://mediashop-api.azurewebsites.net/api';
-export const BASE_ADMIN_URL = `https://lemon-mushroom-04b813c03.4.azurestaticapps.net`;
-export const BASE_CLIENT_URL = `https://jolly-ocean-0cf2f9c03.4.azurestaticapps.net`;
+//export const BASE_ADMIN_URL = `https://lemon-mushroom-04b813c03.4.azurestaticapps.net`;
+//export const BASE_CLIENT_URL = `https://jolly-ocean-0cf2f9c03.4.azurestaticapps.net`;
+export const BASE_ADMIN_URL = `http://localhost:5173`;
+export const BASE_CLIENT_URL = `http://localhost:5174`;
 export const BASE_URL = `${BASE_ROOT}/users`;
 
 let token = localStorage.getItem('token');
@@ -8,11 +10,11 @@ let currentUser = null;
 
 export const handleAdminRedirect = (e) => {
   e.preventDefault();
-  const token = localStorage.getItem('token');
-  
-  if (token) {
-    const encodedToken = encodeURIComponent(token);
-    window.location.href = `${BASE_ADMIN_URL}?token=${encodedToken}`;
+  const sendToken = localStorage.getItem('token');
+  console.log("token: " + sendToken);
+  if (sendToken) {
+    const encodedToken = encodeURIComponent(sendToken);
+    window.location.href = `${BASE_ADMIN_URL}/admin/products?token=${encodedToken}`;
   }
   else 
   {
@@ -22,9 +24,9 @@ export const handleAdminRedirect = (e) => {
 
 export const handleUserRedirect = (e) => {
   e.preventDefault();
-  const token = localStorage.getItem('token');
-  if (token) {
-    const encodedToken = encodeURIComponent(token);
+  const sendToken = localStorage.getItem('token');
+  if (sendToken) {
+    const encodedToken = encodeURIComponent(sendToken);
     window.location.href = `${BASE_CLIENT_URL}/index?token=${encodedToken}`;
   }
   else 
@@ -45,7 +47,6 @@ export const getToken = () =>{
  
   if(token == null)
   {
-    console.log('Token:', token);
     token = localStorage.getItem('token');
   }
   return token;
@@ -102,19 +103,7 @@ export const getUserById = async (id) => {
     return response.json();
   };
 
-  export const getCurrentUser = async () => {
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let paramsToken = urlParams.get('token');
-    if (paramsToken) {
-      try {
-        setToken(paramsToken);
-        currentUser = null;
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-    
+  export const getCurrentUser = async () => {    
     if(currentUser != null)
     {
       return currentUser;
