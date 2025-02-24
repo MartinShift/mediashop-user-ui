@@ -16,7 +16,6 @@ const ClientNavBar = () => {
             const checkAuth = async () => {
               const urlParams = new URLSearchParams(window.location.search);
               let token = urlParams.get('token');
-              console.log("token: " + token);
         
               if (token) {
                 localStorage.setItem('token', token);

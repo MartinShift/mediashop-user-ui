@@ -50,7 +50,7 @@ const ClientTopBar = () => {
     <div className="container-fluid">
       <div className="row align-items-center bg-light py-3 px-xl-5 d-lg-flex">
         <div className="col-lg-4 col-6">
-          <img src='../../public/image.png' className="img-fluid col-lg-4" style={{ maxWidth: '125px', maxHeight: '125px' }} />
+          <img src='../image.png' className="img-fluid col-lg-4" style={{ maxWidth: '125px', maxHeight: '125px' }} />
         </div>
 
         <div className="col-lg-4 d-none d-lg-block">

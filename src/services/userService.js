@@ -7,36 +7,6 @@ export const BASE_URL = `${BASE_ROOT}/users`;
 
 let token = localStorage.getItem('token');
 let currentUser = null;
-
-export const handleAdminRedirect = (e) => {
-  e.preventDefault();
-  const sendToken = localStorage.getItem('token');
-  console.log("token: " + sendToken);
-  if (sendToken) {
-    const encodedToken = encodeURIComponent(sendToken);
-    window.location.href = `${BASE_ADMIN_URL}/admin/products?token=${encodedToken}`;
-  }
-  else 
-  {
-    window.location.href = `${BASE_ADMIN_URL}/signin`;
-  }
-};
-
-export const handleUserRedirect = (e) => {
-  e.preventDefault();
-  const sendToken = localStorage.getItem('token');
-  if (sendToken) {
-    const encodedToken = encodeURIComponent(sendToken);
-    window.location.href = `${BASE_CLIENT_URL}/index?token=${encodedToken}`;
-  }
-  else 
-  {
-    window.location.href = `${BASE_CLIENT_URL}/signin`;
-  }
-};
-
-
-
 export const setToken = (newToken) => {
     token = newToken;
     currentUser = null;
@@ -44,11 +14,6 @@ export const setToken = (newToken) => {
   };
 
 export const getToken = () =>{
- 
-  if(token == null)
-  {
-    token = localStorage.getItem('token');
-  }
   return token;
 }
   
@@ -61,7 +26,53 @@ export const getToken = () =>{
     ...(token && { Authorization: token }),
   });
   
+  export const handleAdminRedirect = (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+      const encodedToken = encodeURIComponent(token);
+      window.location.href = `${BASE_ADMIN_URL}/admin/products?token=${encodedToken}`;
+    }
+    else 
+    {
+      window.location.href = `${BASE_ADMIN_URL}/signin`;
+    }
+  };
+    export const getUserProfileById = async (id) => {
+      const response = await fetch(`${BASE_URL}/${id}/profile`, {
+        method: 'GET',
+        headers: headers(),
+      });
+      return response.json();
+    };
   
+    export const checkAndSetTokenFromUrl = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenFromUrl = urlParams.get('token');
+      if (tokenFromUrl) {
+        setToken(tokenFromUrl);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return true;
+      }
+      return false;
+    };
+    
+    // Modify handleUserRedirect to include user data
+    export const handleUserRedirect = async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const encodedToken = encodeURIComponent(token);
+          window.location.href = `${BASE_CLIENT_URL}/index?token=${encodedToken}`;
+        } catch (error) {
+          console.error('Error getting user data:', error);
+          window.location.href = `${BASE_CLIENT_URL}/signin`;
+        }
+      } else {
+        window.location.href = `${BASE_CLIENT_URL}/signin`;
+      }
+    };
 
   export const register = async (formData) => {
     const response = await fetch(`${BASE_URL}/register`, {
@@ -95,15 +106,8 @@ export const getUserById = async (id) => {
     return response.json();
   };
 
-  export const getUserProfileById = async (id) => {
-    const response = await fetch(`${BASE_URL}/${id}/profile`, {
-      method: 'GET',
-      headers: headers(),
-    });
-    return response.json();
-  };
+  export const getCurrentUser = async () => {
 
-  export const getCurrentUser = async () => {    
     if(currentUser != null)
     {
       return currentUser;
@@ -146,7 +150,6 @@ export const updateUser = async (formData) => {
   });
   return response.json();
 };
-
 export const deleteUser = async (id) => {
   const response = await fetch(`${BASE_URL}/${id}`, {
     method: 'DELETE',
@@ -157,6 +160,14 @@ export const deleteUser = async (id) => {
 
 export const getUserRoles = async (id) => {
   const response = await fetch(`${BASE_URL}/${id}/roles`, {
+    method: 'GET',
+    headers: headers(),
+  });
+  return response.json();
+};
+
+export const getUserAdmin = async (id) => {
+  const response = await fetch(`${BASE_URL}/${id}/admin`, {
     method: 'GET',
     headers: headers(),
   });

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getMediaTypeName, getProductDetail } from '../services/productService';
-import { createReview } from '../services/reviewService';
-import { getCurrentUser, getToken } from '../services/userService';
+import { createReview, deleteReview } from '../services/reviewService';
+import { getCurrentUser, getToken, getUserAdmin } from '../services/userService';
 import ClientTopBar from './shared/ClientTopBar';
 import ClientNavBar from './shared/ClientNavBar';
 import OrderModal from './shared/OrderModal';
 import Footer from './shared/Footer';
+import Swal from 'sweetalert2';
 import StarRating from './shared/StarRating';
 import { createOrder, OrderStatus } from '../services/orderService';
 
@@ -21,6 +22,7 @@ const ProductPage = () => {
     const [activeTab, setActiveTab] = useState('description');
     const [showModal, setShowModal] = useState(false);
     const [orders, setOrders] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
     const handleUnauthorizedAction = () => {
@@ -42,7 +44,6 @@ const ProductPage = () => {
     };
 
     const hasExistingOrder = () => {
-        console.log(currentUser.id)
         return orders.some(order =>
             order.userId === currentUser?.id &&
             (order.status == OrderStatus.Completed || order.status == OrderStatus.InProgress)
@@ -50,17 +51,20 @@ const ProductPage = () => {
     };
 
 
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const productDetail = await getProductDetail(id);
-                console.log(productDetail)
                 setProduct(productDetail.product);
                 setOrders(productDetail.orders);
                 setReviews(productDetail.reviews);
                 const user = await getCurrentUser();
                 if (user) {
                     setCurrentUser(user);
+                    var responseAdmin = await getUserAdmin(user.id);
+                    setIsAdmin(responseAdmin);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -70,6 +74,39 @@ const ProductPage = () => {
         };
         fetchData();
     }, [id]);
+
+    const handleDeleteReview = async (reviewId) => {
+        const result = await Swal.fire({
+            title: 'Видалити відгук?',
+            text: 'Ви впевнені, що хочете видалити цей відгук?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Так, видалити',
+            cancelButtonText: 'Скасувати'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                console.log(reviewId);
+                await deleteReview(reviewId);
+                const productDetail = await getProductDetail(id);
+                setReviews(productDetail.reviews);
+                Swal.fire(
+                    'Видалено!',
+                    'Відгук було успішно видалено.',
+                    'success'
+                );
+            } catch (error) {
+                Swal.fire(
+                    'Помилка!',
+                    'Не вдалося видалити відгук.',
+                    'error'
+                );
+            }
+        }
+    };
 
     const handleSubmitReview = async (e) => {
         if (getToken() == null) {
@@ -180,18 +217,34 @@ const ProductPage = () => {
                                                 <h4 className="mb-4">{reviews.length} відгуків</h4>
                                                 {reviews.map(review => (
                                                     <div key={review.id} className="media mb-4">
-                                                        <img src={review.user.avatarUrl || "img/user.jpg"}
-                                                            alt={review.user.visibleName}
-                                                            className="img-fluid mr-3 mt-1 rounded-circle"
-                                                            style={{ width: '45px', height: '45px' }} />
+                                                        <Link to={`/profile/view/${review.user.id}`} className="mr-3">
+                                                            <img src={review.user.avatarUrl || "img/user.jpg"}
+                                                                alt={review.user.visibleName}
+                                                                className="img-fluid mr-3 mt-1 rounded-circle"
+                                                                style={{ width: '45px', height: '45px' }} />
+                                                        </Link>
                                                         <div className="media-body">
-                                                            <h6>{review.user.visibleName}
-                                                                <small> - <i>{new Date(review.createdAt).toLocaleDateString()}</i></small>
-                                                            </h6>
-                                                            <div className="text-primary mb-2">
-                                                                <StarRating rating={review.rating} />
+                                                            <div className="d-flex justify-content-between align-items-start">
+                                                                <div>
+                                                                    <h6>{review.user.visibleName}
+                                                                        <small> - <i>{new Date(review.createdAt).toLocaleDateString()}</i></small> 
+                                                                  {(isAdmin || (currentUser?.id === review.userId)) && (
+                                                                    <button
+                                                                        className="btn btn-link text-danger p-0 ml-2"
+                                                                        onClick={() => handleDeleteReview(review.id)}
+                                                                        style={{ fontSize: '1.2rem' }}
+                                                                    >
+                                                                        <i className="fas fa-trash"></i>
+                                                                    </button>
+                                                                )}
+                                                                    </h6>
+                                                                    <div className="text-primary mb-2">
+                                                                        <StarRating rating={review.rating} />
+                                                                    </div>
+                                                                    <p>{review.text}</p>
+                                                                </div>
+                                                         
                                                             </div>
-                                                            <p>{review.text}</p>
                                                         </div>
                                                     </div>
                                                 ))}

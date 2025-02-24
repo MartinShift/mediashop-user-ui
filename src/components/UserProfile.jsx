@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getUserProfileById } from '../services/userService';
+import { getUserAdmin, getUserProfileById } from '../services/userService';
 import ProductContainer from './shared/ProductContainer';
 import ClientTopBar from './shared/ClientTopBar';
 import ClientNavBar from './shared/ClientNavBar';
@@ -10,6 +10,7 @@ const UserProfile = () => {
     const { id } = useParams();
     const [userData, setUserData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -17,6 +18,7 @@ const UserProfile = () => {
                 const data = await getUserProfileById(id);
                 console.log(data);
                 setUserData(data);
+                setIsAdmin(await getUserAdmin(data));
             } catch (error) {
                 console.error('Error fetching user data:', error);
             } finally {
@@ -56,6 +58,21 @@ const UserProfile = () => {
                     <div className="profile-details justify-content-center">
                         <div className="d-flex flex-row justify-content-center align-items-center">
                             <h1>{userData.visibleName}</h1>
+                            {isAdmin && (
+                                <i className='fa fa-user ml-2 mb-2'
+                                    style={{
+                                        backgroundColor: 'blue',
+                                        borderRadius: '50%',
+                                        height: '25px',
+                                        width: '25px',
+                                        padding: '5px',
+                                        color: 'white'
+                                    }}
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    title="Адміністратор">
+                                </i>
+                            )}
                         </div>
                         <p>{userData.userName}</p>
                         <div className="d-flex flex-column flex-md-row align-items-center justify-content-center justify-content-md-start">
@@ -101,8 +118,8 @@ const UserProfile = () => {
                                 <div className="d-flex">
                                     <div className="mr-4" style={{ minWidth: '100px' }}>
                                         <a href={`/product/${review.product.id}`}>
-                                            <img 
-                                                src={review.product.previewUrl || "img/product-1.jpg"} 
+                                            <img
+                                                src={review.product.previewUrl || "img/product-1.jpg"}
                                                 alt={review.product.name}
                                                 className="img-fluid"
                                                 style={{ width: '80px', height: '80px', objectFit: 'cover' }}
@@ -113,8 +130,8 @@ const UserProfile = () => {
                                         <div className="d-flex justify-content-between align-items-start">
                                             <div>
                                                 <h6>
-                                                    <a href={`/product/${review.product.id}`} 
-                                                       className="text-dark text-decoration-none hover-primary">
+                                                    <a href={`/product/${review.product.id}`}
+                                                        className="text-dark text-decoration-none hover-primary">
                                                         Продукт: {review.product.name}
                                                     </a>
                                                 </h6>
